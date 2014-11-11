@@ -1,0 +1,10 @@
+{
+	"appName": {
+		"message": "YouTube Repeater",
+		"description": "Extension Name."
+	},
+	"appDescription": {
+		"message": "Adds a button to YouTube videos to toggle auto-repeat.",
+		"description": "Extension Description."
+	}
+}
