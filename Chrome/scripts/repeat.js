@@ -102,7 +102,6 @@ replayButtonImage.addEventListener("mouseup", function() {
 	} else {
 		start = stringToSeconds(replayControlsStartInput.value);
 		end = stringToSeconds(replayControlsEndInput.value);
-		console.log(start + " : " + end);
 		activateRepeat();
 	}
 });
@@ -159,10 +158,15 @@ function replayControlsHide() {
 function typeNumber(e) {
 	var e = (e) ? e : ((event) ? event : null); 
 	var node = (e.target) ? e.target : ((e.srcElement) ? e.srcElement : null); 
-	if((e.keyCode >= 48 && e.keyCode <= 57) && (node.type=="text")) {
-		node.value += String.fromCharCode(e.keyCode);
-		e.preventDefault();
-		return false;
+	if(node.type=="text") {
+		if(e.keyCode >= 48 && e.keyCode <= 57) {
+			node.value += String.fromCharCode(e.keyCode);
+			e.preventDefault();
+			return false;
+		} else if(e.keyCode == 13) {
+			start = stringToSeconds(replayControlsStartInput.value);
+			end = stringToSeconds(replayControlsEndInput.value);
+		}
 	}
 }
 
