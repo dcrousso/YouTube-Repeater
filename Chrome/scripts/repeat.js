@@ -49,14 +49,13 @@ replayControls.appendChild(replayControlsStartLabel);
 var replayControlsStartInput = document.createElement("input");
 replayControlsStartInput.type = "text";
 replayControlsStartInput.id = "replayStart";
-replayControlsStartInput.style.width = "40px";
 replayControlsStartInput.style.height = "13px";
 replayControls.appendChild(replayControlsStartInput);
 
-var replayControlsSeparator = document.createElement("span");
-replayControlsSeparator.innerHTML = "‒";
-replayControlsSeparator.style.margin = "0 5px";
-replayControls.appendChild(replayControlsSeparator);
+var replayControlsTimeSeparator = document.createElement("span");
+replayControlsTimeSeparator.innerHTML = "‒";
+replayControlsTimeSeparator.style.margin = "0 5px";
+replayControls.appendChild(replayControlsTimeSeparator);
 
 var replayControlsEndLabel = document.createElement("span");
 replayControlsEndLabel.innerHTML = "End:";
@@ -66,20 +65,34 @@ replayControls.appendChild(replayControlsEndLabel);
 var replayControlsEndInput = document.createElement("input");
 replayControlsEndInput.type = "text";
 replayControlsEndInput.id = "replayEnd";
-replayControlsEndInput.style.width = "40px";
 replayControlsEndInput.style.height = "13px";
 replayControls.appendChild(replayControlsEndInput);
 
+var replayControlsNumberLabel = document.createElement("span");
+replayControlsNumberLabel.innerHTML = "Loops: ";
+replayControlsNumberLabel.style.margin = "0 3px 0 15	px";
+replayControls.appendChild(replayControlsNumberLabel);
+
+var replayControlsNumberInput = document.createElement("input");
+replayControlsNumberInput.type = "text";
+replayControlsNumberInput.id = "replayLimit";
+replayControlsNumberInput.style.width = "10px";
+replayControlsNumberInput.style.height = "13px";
+replayControlsNumberInput.value = "∞";
+replayControls.appendChild(replayControlsNumberInput);
+
 var repeater, currentURL = window.location.href, replayControlsOpacity;
-var start = 0, end = video.duration, startInputValue, endInputValue;
+var start = 0, end = video.duration, loops, startInputValue, endInputValue;
 
 replayButton.addEventListener("mouseover", function() {
 	replayControlsShow();
 	if(replayControlsStartInput.value == "") {
 		replayControlsStartInput.value = video.duration > 3600 ? "0:00:00" : "0:00";
+		replayControlsStartInput.style.width = (replayControlsStartInput.value.length * 6 + 4) + "px";
 	}
 	if(replayControlsEndInput.value == "") {
 		replayControlsEndInput.value = secondsToString(video.duration);
+		replayControlsEndInput.style.width = (replayControlsEndInput.value.length * 6 + 4) + "px";
 	}
 });
 replayButton.addEventListener("mouseleave", function() {
@@ -87,8 +100,8 @@ replayButton.addEventListener("mouseleave", function() {
 });
 
 replayButtonImage.addEventListener("mouseover", function() {
-	replayButtonTooltip.style.top = (video.parentElement.offsetHeight + 3) + "px";
-	replayButtonTooltip.style.left = (replayButton.offsetLeft + replayButton.offsetWidth - 16) + "px";
+	replayButtonTooltip.style.top = (video.parentElement.offsetHeight - 27) + "px";
+	replayButtonTooltip.style.left = (replayButton.offsetLeft + replayButton.offsetWidth - 15) + "px";
 	replayButtonTooltip.style.display = "block";
 });
 replayButtonImage.addEventListener("mouseleave", function() {
@@ -108,20 +121,23 @@ replayButtonImage.addEventListener("mouseup", function() {
 
 replayControlsStartInput.addEventListener("keydown", typeNumber, false);
 replayControlsEndInput.addEventListener("keydown", typeNumber, false);
+replayControlsNumberInput.addEventListener("keydown", typeNumber, false);
 
 function activateRepeat() {
 	replayButtonImage.src = chrome.extension.getURL("/images/repeat-active.png");
 	replayControls.style.display = "block";
 	replayButton.className = "active";
+	var count = loops;
 	repeater = setInterval(function() {
 		if(end - video.currentTime <= 0.5 || video.ended) {
 			video.currentTime = start;
 			video.play();
 		}
-		if(currentURL != window.location.href) {
+		if(currentURL != window.location.href || count == 0) {
 			deactivateRepeat();
 			currentURL = window.location.href;
 		}
+		count--;
 	}, 500);
 }
 
@@ -162,10 +178,17 @@ function typeNumber(e) {
 		if(e.keyCode >= 48 && e.keyCode <= 57) {
 			node.value += String.fromCharCode(e.keyCode);
 			e.preventDefault();
+			node.style.width = (node.value.length * 6 + 4) + "px";
 			return false;
 		} else if(e.keyCode == 13) {
 			start = stringToSeconds(replayControlsStartInput.value);
 			end = stringToSeconds(replayControlsEndInput.value);
+			if(loops < 1 || replayControlsNumberInput.value == "∞") {
+				replayControlsNumberInput.value = "∞"
+				loops = -1;
+			} else {
+				loops = parseInt(replayControlsNumberInput.value);
+			}
 		}
 	}
 }
