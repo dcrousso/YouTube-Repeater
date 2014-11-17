@@ -100,7 +100,7 @@ replayButton.addEventListener("mouseleave", function() {
 });
 
 replayButtonImage.addEventListener("mouseover", function() {
-	replayButtonTooltip.style.top = (video.parentElement.offsetHeight - 27) + "px";
+	replayButtonTooltip.style.top = (video.parentElement.offsetHeight + 3) + "px";
 	replayButtonTooltip.style.left = (replayButton.offsetLeft + replayButton.offsetWidth - 15) + "px";
 	replayButtonTooltip.style.display = "block";
 });
