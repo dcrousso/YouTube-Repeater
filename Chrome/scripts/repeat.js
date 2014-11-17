@@ -70,7 +70,7 @@ replayControls.appendChild(replayControlsEndInput);
 
 var replayControlsNumberLabel = document.createElement("span");
 replayControlsNumberLabel.innerHTML = "Loops: ";
-replayControlsNumberLabel.style.margin = "0 3px 0 15	px";
+replayControlsNumberLabel.style.margin = "0 3px 0 15px";
 replayControls.appendChild(replayControlsNumberLabel);
 
 var replayControlsNumberInput = document.createElement("input");
