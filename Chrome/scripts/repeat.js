@@ -129,7 +129,7 @@ function activateRepeat() {
 	replayButton.className = "active";
 	var count = loops;
 	repeater = setInterval(function() {
-		if(end - video.currentTime <= 0.5 || video.ended) {
+		if(end - video.currentTime <= 0.5 || video.ended || video.currentTime < start) {
 			video.currentTime = start;
 			video.play();
 		}
