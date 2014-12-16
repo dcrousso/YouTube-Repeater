@@ -81,16 +81,16 @@ replayControlsNumberInput.style.height = "13px";
 replayControlsNumberInput.value = "∞";
 replayControls.appendChild(replayControlsNumberInput);
 
-var repeater, currentURL = window.location.href, replayControlsOpacity;
+var repeater, replayControlsOpacity;
 var start = 0, end = video.duration, loops, startInputValue, endInputValue;
 
 replayButton.addEventListener("mouseover", function() {
 	replayControlsShow();
-	if(replayControlsStartInput.value == "") {
+	if(replayControlsStartInput.value === "") {
 		replayControlsStartInput.value = video.duration > 3600 ? "0:00:00" : "0:00";
 		replayControlsStartInput.style.width = (replayControlsStartInput.value.length * 6 + 4) + "px";
 	}
-	if(replayControlsEndInput.value == "") {
+	if(replayControlsEndInput.value === "") {
 		replayControlsEndInput.value = secondsToString(video.duration);
 		replayControlsEndInput.style.width = (replayControlsEndInput.value.length * 6 + 4) + "px";
 	}
@@ -106,11 +106,9 @@ replayButtonImage.addEventListener("mouseover", function() {
 });
 replayButtonImage.addEventListener("mouseleave", function() {
 	replayButtonTooltip.style.display = "none";
-	
 });
-
 replayButtonImage.addEventListener("mouseup", function() {
-	if(replayButton.className == "active") {
+	if(replayButton.className === "active") {
 		deactivateRepeat();
 	} else {
 		start = stringToSeconds(replayControlsStartInput.value);
@@ -123,28 +121,75 @@ replayControlsStartInput.addEventListener("keydown", typeNumber, false);
 replayControlsEndInput.addEventListener("keydown", typeNumber, false);
 replayControlsNumberInput.addEventListener("keydown", typeNumber, false);
 
+checkURLHash();
+
 function activateRepeat() {
 	replayButtonImage.src = chrome.extension.getURL("/images/repeat-active.png");
 	replayControls.style.display = "block";
 	replayButton.className = "active";
+	window.location.hash = window.location.hash.replace(/((&|#)r=true)(&r(s|e)=\d+){0,2}/, "") + "r=true";
+	if(start > 0) {
+		window.location.hash += "&rs=" + start;
+	}
+	if(end < video.duration || !isNaN(end)) {
+		window.location.hash += "&re=" + end;
+	}
 	var count = loops;
 	repeater = setInterval(function() {
-		if(end - video.currentTime <= 0.5 || video.ended || video.currentTime < start) {
+		if(end - video.currentTime <= 0.1 || video.ended || video.currentTime < start) {
 			video.currentTime = start;
 			video.play();
 		}
-		if(currentURL != window.location.href || count == 0) {
+		if(count === 0 || window.location.hash.indexOf("r=true") === -1) {
 			deactivateRepeat();
-			currentURL = window.location.href;
 		}
 		count--;
-	}, 500);
+	}, 100);
 }
 
 function deactivateRepeat() {
 	replayButtonImage.src = chrome.extension.getURL("/images/repeat.png");
 	replayButton.className = "";
+	if(window.location.hash.indexOf("r=true") === -1) {
+		replayControlsStartInput.value = "";
+		replatControlsEndInput.value = "";
+	} else {
+		window.location.hash = window.location.hash.replace(/((&|#)r=true)(&r(s|e)=\d+){0,2}/, "");
+	}
 	clearInterval(repeater);
+}
+
+function checkURLHash() {
+	var hash = window.location.hash;
+	if(hash.indexOf("r=true") > -1) {
+		var repeatStart = hash.indexOf("rs=");
+		if(repeatStart > -1) {
+			if(hash.indexOf("&", repeatStart) > -1) {
+				start = hash.substring(repeatStart + 3, hash.indexOf("&", repeatStart));
+			} else {
+				start = hash.substring(repeatStart + 3);
+			}
+			replayControlsStartInput.value = secondsToString(start);
+			replayControlsStartInput.style.width = (replayControlsStartInput.value.length * 6 + 4) + "px";
+		} else {
+			start = 0;
+		}
+		var repeatEnd = hash.indexOf("re=");
+		if(repeatEnd > -1) {
+			if(hash.indexOf("&", repeatEnd) > -1) {
+				end = hash.substring(repeatEnd + 3, hash.indexOf("&", repeatEnd));
+			} else {
+				end = hash.substring(repeatEnd + 3);
+			}
+			replayControlsEndInput.value = secondsToString(end);
+			replayControlsEndInput.style.width = (replayControlsEndInput.value.length * 6 + 4) + "px";
+		} else {
+			end = video.duration;
+		}
+		activateRepeat();
+	} else {
+		deactivateRepeat();
+	}
 }
 
 function replayControlsShow() {
@@ -174,16 +219,16 @@ function replayControlsHide() {
 function typeNumber(e) {
 	var e = (e) ? e : ((event) ? event : null); 
 	var node = (e.target) ? e.target : ((e.srcElement) ? e.srcElement : null); 
-	if(node.type=="text") {
+	if(node.type==="text") {
 		if(e.keyCode >= 48 && e.keyCode <= 57) {
 			node.value += String.fromCharCode(e.keyCode);
 			e.preventDefault();
 			node.style.width = (node.value.length * 6 + 4) + "px";
 			return false;
-		} else if(e.keyCode == 13) {
+		} else if(e.keyCode === 13) {
 			start = stringToSeconds(replayControlsStartInput.value);
 			end = stringToSeconds(replayControlsEndInput.value);
-			if(loops < 1 || replayControlsNumberInput.value == "∞") {
+			if(loops < 1 || replayControlsNumberInput.value === "∞") {
 				replayControlsNumberInput.value = "∞"
 				loops = -1;
 			} else {
