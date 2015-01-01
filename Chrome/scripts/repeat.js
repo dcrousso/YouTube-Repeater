@@ -84,6 +84,8 @@ replayControls.appendChild(replayControlsNumberInput);
 var repeater, replayControlsOpacity;
 var start = 0, end = video.duration, loops, startInputValue, endInputValue;
 
+document.getElementsByTagName("body")[0].addEventListener("load", checkURLHash());
+
 replayButton.addEventListener("mouseover", function() {
 	replayControlsShow();
 	if(replayControlsStartInput.value === "") {
@@ -95,9 +97,7 @@ replayButton.addEventListener("mouseover", function() {
 		replayControlsEndInput.style.width = (replayControlsEndInput.value.length * 6 + 4) + "px";
 	}
 });
-replayButton.addEventListener("mouseleave", function() {
-	replayControlsHide();
-});
+replayButton.addEventListener("mouseleave", replayControlsHide);
 
 replayButtonImage.addEventListener("mouseover", function() {
 	replayButtonTooltip.style.top = (video.parentElement.offsetHeight + 3) + "px";
@@ -120,8 +120,6 @@ replayButtonImage.addEventListener("mouseup", function() {
 replayControlsStartInput.addEventListener("keydown", typeNumber, false);
 replayControlsEndInput.addEventListener("keydown", typeNumber, false);
 replayControlsNumberInput.addEventListener("keydown", typeNumber, false);
-
-checkURLHash();
 
 function activateRepeat() {
 	replayButtonImage.src = chrome.extension.getURL("/images/repeat-active.png");
@@ -152,7 +150,7 @@ function deactivateRepeat() {
 	replayButton.className = "";
 	if(window.location.hash.indexOf("r=true") === -1) {
 		replayControlsStartInput.value = "";
-		replatControlsEndInput.value = "";
+		replayControlsEndInput.value = "";
 	} else {
 		window.location.hash = window.location.hash.replace(/((&|#)r=true)(&r(s|e)=\d+){0,2}/, "");
 	}
@@ -173,6 +171,7 @@ function checkURLHash() {
 			replayControlsStartInput.style.width = (replayControlsStartInput.value.length * 6 + 4) + "px";
 		} else {
 			start = 0;
+			replayControlsStartInput.value = "";
 		}
 		var repeatEnd = hash.indexOf("re=");
 		if(repeatEnd > -1) {
@@ -185,6 +184,7 @@ function checkURLHash() {
 			replayControlsEndInput.style.width = (replayControlsEndInput.value.length * 6 + 4) + "px";
 		} else {
 			end = video.duration;
+			replayControlsEndInput.value = "";
 		}
 		activateRepeat();
 	} else {
