@@ -129,7 +129,7 @@ function activateRepeat() {
 	if(start > 0) {
 		window.location.hash += "&rs=" + start;
 	}
-	if(end < video.duration || !isNaN(end)) {
+	if(Math.abs(video.duration - end) < 1 && !isNaN(end)) {
 		window.location.hash += "&re=" + end;
 	}
 	var count = loops;
