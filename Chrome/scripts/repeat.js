@@ -1,125 +1,137 @@
-var video = document.getElementsByClassName("html5-main-video")[0];
-var videoControls = document.getElementsByClassName("html5-player-chrome")[0];
-
-var replayButton = document.createElement("div");
-replayButton.id = "replayButton";
-replayButton.setAttribute("role", "button");
-replayButton.style.float = "right";
-replayButton.style.height = "27px";
-replayButton.style.cursor = "pointer";
-videoControls.appendChild(replayButton);
-
-var replayButtonImage = document.createElement("img");
-replayButtonImage.style.float = "right";
-replayButtonImage.src = chrome.extension.getURL("/images/repeat.png");
-replayButton.appendChild(replayButtonImage);
-
-var replayButtonTooltip = document.createElement("div");
-replayButtonTooltip.id = "replayButtonTooltip";
-replayButtonTooltip.className = "ytp-tooltip";
-document.getElementsByClassName("html5-video-player")[0].appendChild(replayButtonTooltip);
-
-var replayButtonTooltipBody = document.createElement("div");
-replayButtonTooltipBody.className = "ytp-tooltip-body";
-replayButtonTooltipBody.style.left = "-22.5px";
-replayButtonTooltip.appendChild(replayButtonTooltipBody);
-
-var replayButtonTooltipBodyText = document.createElement("div");
-replayButtonTooltipBodyText.className = "ytp-text-tooltip";
-replayButtonTooltipBodyText.innerHTML = "Repeat";
-replayButtonTooltipBody.appendChild(replayButtonTooltipBodyText);
-
-var replayButtonTooltipArrow = document.createElement("div");
-replayButtonTooltipArrow.className = "ytp-tooltip-arrow";
-replayButtonTooltip.appendChild(replayButtonTooltipArrow);
-
-var replayControls = document.createElement("div");
-replayControls.id = "replayControls";
-replayControls.style.display = "none";
-replayControls.style.float = "right";
-replayControls.style.lineHeight = "27px";
-replayControls.style.opacity = "0";
-replayButton.appendChild(replayControls);
-
-var replayControlsStartLabel = document.createElement("span");
-replayControlsStartLabel.innerHTML = "Start:";
-replayControlsStartLabel.style.marginRight = "3px";
-replayControls.appendChild(replayControlsStartLabel);
-
-var replayControlsStartInput = document.createElement("input");
-replayControlsStartInput.type = "text";
-replayControlsStartInput.id = "replayStart";
-replayControlsStartInput.style.height = "13px";
-replayControls.appendChild(replayControlsStartInput);
-
-var replayControlsTimeSeparator = document.createElement("span");
-replayControlsTimeSeparator.innerHTML = "‒";
-replayControlsTimeSeparator.style.margin = "0 5px";
-replayControls.appendChild(replayControlsTimeSeparator);
-
-var replayControlsEndLabel = document.createElement("span");
-replayControlsEndLabel.innerHTML = "End:";
-replayControlsEndLabel.style.marginRight = "3px";
-replayControls.appendChild(replayControlsEndLabel);
-
-var replayControlsEndInput = document.createElement("input");
-replayControlsEndInput.type = "text";
-replayControlsEndInput.id = "replayEnd";
-replayControlsEndInput.style.height = "13px";
-replayControls.appendChild(replayControlsEndInput);
-
-var replayControlsNumberLabel = document.createElement("span");
-replayControlsNumberLabel.innerHTML = "Loops: ";
-replayControlsNumberLabel.style.margin = "0 3px 0 15px";
-replayControls.appendChild(replayControlsNumberLabel);
-
-var replayControlsNumberInput = document.createElement("input");
-replayControlsNumberInput.type = "text";
-replayControlsNumberInput.id = "replayLimit";
-replayControlsNumberInput.style.width = "10px";
-replayControlsNumberInput.style.height = "13px";
-replayControlsNumberInput.value = "∞";
-replayControls.appendChild(replayControlsNumberInput);
-
-var repeater, replayControlsOpacity;
-var start = 0, end = video.duration, loops, startInputValue, endInputValue;
-
-document.getElementsByTagName("body")[0].addEventListener("load", checkURLHash());
-
-replayButton.addEventListener("mouseover", function() {
-	replayControlsShow();
-	if(replayControlsStartInput.value === "") {
-		replayControlsStartInput.value = video.duration > 3600 ? "0:00:00" : "0:00";
-		replayControlsStartInput.style.width = (replayControlsStartInput.value.length * 6 + 4) + "px";
+var video, videoControls;
+var videoAvailable = setInterval(function() {
+	video = document.getElementsByClassName("html5-main-video")[0];
+	videoControls = document.getElementsByClassName("html5-player-chrome")[0];
+	if(document.location.search.indexOf("?v=") >= 0 && video != undefined && videoControls.children.length > 0) {
+		generateRepeatControls();
+		clearInterval(videoAvailable);
 	}
-	if(replayControlsEndInput.value === "") {
-		replayControlsEndInput.value = secondsToString(video.duration);
-		replayControlsEndInput.style.width = (replayControlsEndInput.value.length * 6 + 4) + "px";
-	}
-});
-replayButton.addEventListener("mouseleave", replayControlsHide);
+}, 100);
 
-replayButtonImage.addEventListener("mouseover", function() {
-	replayButtonTooltip.style.top = (video.parentElement.offsetHeight + 3) + "px";
-	replayButtonTooltip.style.left = (replayButton.offsetLeft + replayButton.offsetWidth - 15) + "px";
-	replayButtonTooltip.style.display = "block";
-});
-replayButtonImage.addEventListener("mouseleave", function() {
-	replayButtonTooltip.style.display = "none";
-});
-replayButtonImage.addEventListener("mouseup", function() {
-	if(replayButton.className === "active") {
-		deactivateRepeat();
-	} else {
-		start = stringToSeconds(replayControlsStartInput.value);
-		end = stringToSeconds(replayControlsEndInput.value);
-		activateRepeat();
-	}
-});
+var repeater, replayControlsInterval, replayControlsOpacity, start, end, loops, startInputValue, endInputValue;
+var replayButton, replayButtonImage, replayControls, replayControlsStartInput, replayControlsEndInput, replayControlsNumberInput;
 
-replayControlsStartInput.addEventListener("keydown", typeNumber, false);
-replayControlsEndInput.addEventListener("keydown", typeNumber, false);
-replayControlsNumberInput.addEventListener("keydown", typeNumber, false);
+function generateRepeatControls() {
+	replayButton = document.createElement("div");
+	replayButton.id = "replayButton";
+	replayButton.setAttribute("role", "button");
+	replayButton.style.float = "right";
+	replayButton.style.height = "27px";
+	replayButton.style.cursor = "pointer";
+	videoControls.appendChild(replayButton);
+
+	replayButtonImage = document.createElement("img");
+	replayButtonImage.style.float = "right";
+	replayButtonImage.src = chrome.extension.getURL("/images/repeat.png");
+	replayButton.appendChild(replayButtonImage);
+
+	var replayButtonTooltip = document.createElement("div");
+	replayButtonTooltip.id = "replayButtonTooltip";
+	replayButtonTooltip.className = "ytp-tooltip";
+	document.getElementsByClassName("html5-video-player")[0].appendChild(replayButtonTooltip);
+
+	var replayButtonTooltipBody = document.createElement("div");
+	replayButtonTooltipBody.className = "ytp-tooltip-body";
+	replayButtonTooltipBody.style.left = "-22.5px";
+	replayButtonTooltip.appendChild(replayButtonTooltipBody);
+
+	var replayButtonTooltipBodyText = document.createElement("div");
+	replayButtonTooltipBodyText.className = "ytp-text-tooltip";
+	replayButtonTooltipBodyText.innerHTML = "Repeat";
+	replayButtonTooltipBody.appendChild(replayButtonTooltipBodyText);
+
+	var replayButtonTooltipArrow = document.createElement("div");
+	replayButtonTooltipArrow.className = "ytp-tooltip-arrow";
+	replayButtonTooltip.appendChild(replayButtonTooltipArrow);
+
+	replayControls = document.createElement("div");
+	replayControls.id = "replayControls";
+	replayControls.style.display = "none";
+	replayControls.style.float = "right";
+	replayControls.style.lineHeight = "27px";
+	replayControls.style.opacity = "0";
+	replayButton.appendChild(replayControls);
+
+	var replayControlsStartLabel = document.createElement("span");
+	replayControlsStartLabel.innerHTML = "Start:";
+	replayControlsStartLabel.style.marginRight = "3px";
+	replayControls.appendChild(replayControlsStartLabel);
+
+	replayControlsStartInput = document.createElement("input");
+	replayControlsStartInput.type = "text";
+	replayControlsStartInput.id = "replayStart";
+	replayControlsStartInput.style.height = "13px";
+	replayControls.appendChild(replayControlsStartInput);
+
+	var replayControlsTimeSeparator = document.createElement("span");
+	replayControlsTimeSeparator.innerHTML = "‒";
+	replayControlsTimeSeparator.style.margin = "0 5px";
+	replayControls.appendChild(replayControlsTimeSeparator);
+
+	var replayControlsEndLabel = document.createElement("span");
+	replayControlsEndLabel.innerHTML = "End:";
+	replayControlsEndLabel.style.marginRight = "3px";
+	replayControls.appendChild(replayControlsEndLabel);
+
+	replayControlsEndInput = document.createElement("input");
+	replayControlsEndInput.type = "text";
+	replayControlsEndInput.id = "replayEnd";
+	replayControlsEndInput.style.height = "13px";
+	replayControls.appendChild(replayControlsEndInput);
+
+	var replayControlsNumberLabel = document.createElement("span");
+	replayControlsNumberLabel.innerHTML = "Loops: ";
+	replayControlsNumberLabel.style.margin = "0 3px 0 15px";
+	replayControls.appendChild(replayControlsNumberLabel);
+
+	var replayControlsNumberInput = document.createElement("input");
+	replayControlsNumberInput.type = "text";
+	replayControlsNumberInput.id = "replayLimit";
+	replayControlsNumberInput.style.width = "10px";
+	replayControlsNumberInput.style.height = "13px";
+	replayControlsNumberInput.value = "∞";
+	replayControls.appendChild(replayControlsNumberInput);
+
+	start = 0;
+	end = video.duration;
+
+	document.body.addEventListener("load", checkURLHash());
+
+	replayButton.addEventListener("mouseover", function() {
+		replayControlsShow();
+		if(replayControlsStartInput.value === "") {
+			replayControlsStartInput.value = video.duration > 3600 ? "0:00:00" : "0:00";
+			replayControlsStartInput.style.width = (replayControlsStartInput.value.length * 6 + 4) + "px";
+		}
+		if(replayControlsEndInput.value === "") {
+			replayControlsEndInput.value = secondsToString(video.duration);
+			replayControlsEndInput.style.width = (replayControlsEndInput.value.length * 6 + 4) + "px";
+		}
+	});
+	replayButton.addEventListener("mouseleave", replayControlsHide);
+
+	replayButtonImage.addEventListener("mouseover", function() {
+		replayButtonTooltip.style.top = (video.parentElement.offsetHeight + 3) + "px";
+		replayButtonTooltip.style.left = (replayButton.offsetLeft + replayButton.offsetWidth - 15) + "px";
+		replayButtonTooltip.style.display = "block";
+	});
+	replayButtonImage.addEventListener("mouseleave", function() {
+		replayButtonTooltip.style.display = "none";
+	});
+	replayButtonImage.addEventListener("mouseup", function() {
+		if(replayButton.className === "active") {
+			deactivateRepeat();
+		} else {
+			start = stringToSeconds(replayControlsStartInput.value);
+			end = stringToSeconds(replayControlsEndInput.value);
+			activateRepeat();
+		}
+	});
+
+	replayControlsStartInput.addEventListener("keyup", typeNumber);
+	replayControlsEndInput.addEventListener("keyup", typeNumber);
+	replayControlsNumberInput.addEventListener("keyup", typeNumber);
+}
 
 function activateRepeat() {
 	replayButtonImage.src = chrome.extension.getURL("/images/repeat-active.png");
@@ -194,24 +206,26 @@ function checkURLHash() {
 
 function replayControlsShow() {
 	replayControls.style.display = "block";
-	var interval = setInterval(function() {
+	clearInterval(replayControlsInterval);
+	replayControlsInterval = setInterval(function() {
 		replayControlsOpacity = parseFloat(replayControls.style.opacity);
 		replayControls.style.opacity = replayControlsOpacity + 0.1;
 		if(replayControlsOpacity >= 1) {
 			replayControls.style.opacity = 1;
-			clearInterval(interval);
+			clearInterval(replayControlsInterval);
 		}
 	}, 5);
 }
 
 function replayControlsHide() {
-	var interval = setInterval(function() {
+	clearInterval(replayControlsInterval);
+	replayControlsInterval = setInterval(function() {
 		replayControlsOpacity = parseFloat(replayControls.style.opacity);
 		replayControls.style.opacity = replayControlsOpacity - 0.1;
 		if(replayControlsOpacity <= 0) {
 			replayControls.style.opacity = 0;
 			replayControls.style.display = "none";
-			clearInterval(interval);
+			clearInterval(replayControlsInterval);
 		}
 	}, 5);
 }
