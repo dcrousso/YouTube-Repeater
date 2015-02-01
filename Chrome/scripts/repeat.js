@@ -141,7 +141,7 @@ function activateRepeat() {
 	if(start > 0) {
 		window.location.hash += "&rs=" + start;
 	}
-	if(Math.abs(video.duration - end) < 1 && !isNaN(end)) {
+	if(Math.abs(video.duration - end) > 1 && !isNaN(end)) {
 		window.location.hash += "&re=" + end;
 	}
 	var count = loops;
@@ -242,11 +242,12 @@ function typeNumber(e) {
 		} else if(e.keyCode === 13) {
 			start = stringToSeconds(replayControlsStartInput.value);
 			end = stringToSeconds(replayControlsEndInput.value);
-			if(loops < 1 || replayControlsNumberInput.value === "∞") {
+			var inputLoops = parseInt(replayControlsNumberInput);
+			if(loops < 1 || inputLoops < 0 ) {
 				replayControlsNumberInput.value = "∞"
 				loops = -1;
 			} else {
-				loops = parseInt(replayControlsNumberInput.value);
+				loops = inputLoops;
 			}
 		}
 	}
