@@ -249,6 +249,9 @@ function typeNumber(e) {
 			} else {
 				loops = inputLoops;
 			}
+			if(replayButton.className.indexOf("active") < 0) {
+				activateRepeat();
+			}
 		}
 	}
 }
