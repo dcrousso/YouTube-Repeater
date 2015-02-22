@@ -210,7 +210,7 @@ function replayControlsShow() {
 	replayControlsInterval = setInterval(function() {
 		replayControlsOpacity = parseFloat(replayControls.style.opacity);
 		replayControls.style.opacity = replayControlsOpacity + 0.1;
-		if(replayControlsOpacity >= 1) {
+		if(replayControlsOpacity.toFixed(2) >= 1) {
 			replayControls.style.opacity = 1;
 			clearInterval(replayControlsInterval);
 		}
@@ -222,7 +222,7 @@ function replayControlsHide() {
 	replayControlsInterval = setInterval(function() {
 		replayControlsOpacity = parseFloat(replayControls.style.opacity);
 		replayControls.style.opacity = replayControlsOpacity - 0.1;
-		if(replayControlsOpacity <= 0) {
+		if(replayControlsOpacity.toFixed(2) <= 0.1) {
 			replayControls.style.opacity = 0;
 			replayControls.style.display = "none";
 			clearInterval(replayControlsInterval);
