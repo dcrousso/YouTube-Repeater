@@ -144,16 +144,15 @@ function activateRepeat() {
 	if(Math.abs(video.duration - end) > 1 && !isNaN(end)) {
 		window.location.hash += "&re=" + end;
 	}
-	var count = loops;
 	repeater = setInterval(function() {
 		if(end - video.currentTime <= 0.1 || video.ended || video.currentTime < start) {
 			video.currentTime = start;
 			video.play();
+			loops--;
 		}
-		if(count === 0 || window.location.hash.indexOf("r=true") === -1) {
+		if(loops === 0 || window.location.hash.indexOf("r=true") < 0) {
 			deactivateRepeat();
 		}
-		count--;
 	}, 100);
 }
 
@@ -242,12 +241,10 @@ function typeNumber(e) {
 		} else if(e.keyCode === 13) {
 			start = stringToSeconds(replayControlsStartInput.value);
 			end = stringToSeconds(replayControlsEndInput.value);
-			var inputLoops = parseInt(replayControlsNumberInput);
-			if(loops < 1 || inputLoops < 0 ) {
-				replayControlsNumberInput.value = "∞"
+			loops = parseInt(document.getElementById("replayLimit").value) || -1;
+			if(loops < 1) {
+				document.getElementById("replayLimit").value = "∞";
 				loops = -1;
-			} else {
-				loops = inputLoops;
 			}
 			if(replayButton.className.indexOf("active") < 0) {
 				activateRepeat();
