@@ -202,7 +202,7 @@ function checkURLHash() {
 		deactivateRepeat();
 	}
 	var startAt = window.location.search.match(/(\d{1,2}(h|m|s))/g);
-	if(startAt.length > 0) {
+	if(startAt && startAt.length > 0) {
 		startAt.reverse();
 		var seconds = parseInt(startAt[0]);
 		if(startAt.length > 1) {
