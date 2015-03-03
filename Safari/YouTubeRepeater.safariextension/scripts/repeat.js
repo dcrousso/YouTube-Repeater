@@ -201,6 +201,19 @@ function checkURLHash() {
 	} else {
 		deactivateRepeat();
 	}
+	var startAt = window.location.search.match(/(\d{1,2}(h|m|s))/g);
+	if(startAt.length > 0) {
+		startAt.reverse();
+		var seconds = parseInt(startAt[0]);
+		if(startAt.length > 1) {
+			seconds += parseInt(startAt[1]) * 60;
+			if(startAt.length > 2) {
+				seconds += parseInt(startAt[2]) * 3600;
+			}
+		}
+		replayControlsStartInput.value = secondsToString(seconds);
+		replayControlsStartInput.style.width = (replayControlsStartInput.value.length * 6 + 4) + "px";
+	}
 }
 
 function replayControlsShow() {
