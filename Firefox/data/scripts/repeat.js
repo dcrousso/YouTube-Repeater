@@ -1,8 +1,8 @@
 var repeatPNG, repeatActivePNG;
-self.port.on("repeat", function(payload) {
+self.port.once("repeat", function(payload) {
 	repeatPNG = payload;
 });
-self.port.on("repeat-active", function(payload) {
+self.port.once("repeat-active", function(payload) {
 	repeatActivePNG = payload;
 });
 
