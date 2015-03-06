@@ -1,11 +1,3 @@
-var repeatPNG, repeatActivePNG;
-self.port.once("repeat", function(payload) {
-	repeatPNG = payload;
-});
-self.port.once("repeat-active", function(payload) {
-	repeatActivePNG = payload;
-});
-
 var video, videoControls;
 var videoAvailable = setInterval(function() {
 	video = document.getElementsByClassName("html5-main-video")[0];
@@ -30,7 +22,7 @@ function generateRepeatControls() {
 
 	replayButtonImage = document.createElement("img");
 	replayButtonImage.style.float = "right";
-	replayButtonImage.src = repeatPNG;
+	replayButtonImage.src = self.options.repeatImage;
 	replayButton.appendChild(replayButtonImage);
 
 	var replayButtonTooltip = document.createElement("div");
@@ -142,7 +134,7 @@ function generateRepeatControls() {
 }
 
 function activateRepeat() {
-	replayButtonImage.src = repeatActivePNG;
+	replayButtonImage.src = self.options.repeatActiveImage;
 	replayControls.style.display = "block";
 	replayButton.className = "active";
 	window.location.hash = window.location.hash.replace(/((&|#)r=true)(&r(s|e)=\d+){0,2}/, "") + "r=true";
@@ -165,7 +157,7 @@ function activateRepeat() {
 }
 
 function deactivateRepeat() {
-	replayButtonImage.src = repeatPNG;
+	replayButtonImage.src = self.options.repeatImage;
 	replayButton.className = "";
 	if(window.location.hash.indexOf("r=true") === -1) {
 		replayControlsStartInput.value = "";
