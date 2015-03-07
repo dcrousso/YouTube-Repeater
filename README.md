@@ -1,4 +1,4 @@
-# ![YouTube Repeater](//raw.githubusercontent.com/dcrousso/YouTube-Repeater/master/Icons/icon-48.png) YouTube Repeater 
+# ![YouTube Repeater](http://raw.githubusercontent.com/dcrousso/YouTube-Repeater/master/Icons/icon-48.png) YouTube Repeater 
 
 ### Chrome: [download](//chrome.google.com/webstore/detail/youtube-repeater/ihlfngkojddkjkdlmgkbdpkfkafclhnj) and [source code](//github.com/dcrousso/YouTube-Repeater/tree/master/chrome)
 
