@@ -137,13 +137,7 @@ function activateRepeat() {
 	replayButtonImage.src = safari.extension.baseURI + "images/repeat-active.png";
 	replayControls.style.display = "block";
 	replayButton.className = "active";
-	window.location.hash = window.location.hash.replace(/((&|#)r=true)(&r(s|e)=\d+){0,2}/, "") + "r=true";
-	if(start > 0) {
-		window.location.hash += "&rs=" + start;
-	}
-	if(Math.abs(video.duration - end) > 1 && !isNaN(end)) {
-		window.location.hash += "&re=" + end;
-	}
+	addURLHash();
 	repeater = setInterval(function() {
 		if(end - video.currentTime <= 0.1 || video.ended || video.currentTime < start) {
 			video.currentTime = start;
@@ -216,6 +210,16 @@ function checkURLHash() {
 	}
 }
 
+function addURLHash() {
+	window.location.hash = window.location.hash.replace(/((&|#)r=true)(&r(s|e)=\d+){0,2}/, "") + "r=true";
+	if(start > 0) {
+		window.location.hash += "&rs=" + start;
+	}
+	if(Math.abs(video.duration - end) > 1 && !isNaN(end)) {
+		window.location.hash += "&re=" + end;
+	}
+}
+
 function replayControlsShow() {
 	replayControls.style.display = "block";
 	clearInterval(replayControlsInterval);
@@ -261,6 +265,8 @@ function typeNumber(e) {
 			}
 			if(replayButton.className.indexOf("active") < 0) {
 				activateRepeat();
+			} else {
+				addURLHash();
 			}
 		}
 	}
