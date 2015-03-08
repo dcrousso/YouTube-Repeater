@@ -1,4 +1,4 @@
-var video, videoControls;
+var video, videoControls, imageRepeat, imageRepeatActive;
 var videoAvailable = setInterval(function() {
 	video = document.getElementsByClassName("html5-main-video")[0];
 	videoControls = document.getElementsByClassName("html5-player-chrome")[0];
@@ -12,6 +12,9 @@ var repeater, replayControlsInterval, replayControlsOpacity, start, end, loops, 
 var replayButton, replayButtonImage, replayControls, replayControlsStartInput, replayControlsEndInput, replayControlsNumberInput;
 
 function generateRepeatControls() {
+	imageRepeat = safari.extension.baseURI + "images/repeat.png";
+	imageRepeatActive = safari.extension.baseURI + "images/repeat-active.png";
+
 	replayButton = document.createElement("div");
 	replayButton.id = "replayButton";
 	replayButton.setAttribute("role", "button");
@@ -22,7 +25,7 @@ function generateRepeatControls() {
 
 	replayButtonImage = document.createElement("img");
 	replayButtonImage.style.float = "right";
-	replayButtonImage.src = safari.extension.baseURI + "images/repeat.png";
+	replayButtonImage.src = imageRepeat;
 	replayButton.appendChild(replayButtonImage);
 
 	var replayButtonTooltip = document.createElement("div");
@@ -134,7 +137,7 @@ function generateRepeatControls() {
 }
 
 function activateRepeat() {
-	replayButtonImage.src = safari.extension.baseURI + "images/repeat-active.png";
+	replayButtonImage.src = imageRepeatActive;
 	replayControls.style.display = "block";
 	replayButton.className = "active";
 	addURLHash();
@@ -151,7 +154,7 @@ function activateRepeat() {
 }
 
 function deactivateRepeat() {
-	replayButtonImage.src = safari.extension.baseURI + "images/repeat.png";
+	replayButtonImage.src = imageRepeat;
 	replayButton.className = "";
 	if(window.location.hash.indexOf("r=true") === -1) {
 		replayControlsStartInput.value = "";
