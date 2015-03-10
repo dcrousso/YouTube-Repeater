@@ -1,4 +1,4 @@
-var video, videoControls, imageRepeat, imageRepeatActive;
+var video, videoControls, imageRepeat, imageRepeatActive, currentVideo;
 var videoAvailable = setInterval(function() {
 	video = document.getElementsByClassName("html5-main-video")[0];
 	videoControls = document.getElementsByClassName("html5-player-chrome")[0];
@@ -98,7 +98,12 @@ function generateRepeatControls() {
 	start = 0;
 	end = video.duration;
 
-	document.body.addEventListener("load", checkURLHash());
+	checkURLHash();
+	detectNewVideo(document.getElementById("content"), function() {
+		replayControlsStartInput.value = "";
+		replayControlsEndInput.value = "";
+		currentVideo = window.location.search;
+	});
 
 	replayButton.addEventListener("mouseover", function() {
 		replayControlsShow();
@@ -247,6 +252,24 @@ function replayControlsHide() {
 			clearInterval(replayControlsInterval);
 		}
 	}, 5);
+}
+
+function detectNewVideo(element, callback) {
+	var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+	currentVideo = window.location.search;
+	if(MutationObserver) {
+		var obs = new MutationObserver(function(mutations, observer) {
+			if(mutations[0].addedNodes.length || mutations[0].removedNodes.length) {
+				if(window.location.search !== currentVideo) {
+					callback();
+				}
+			}
+		});
+		obs.observe(element, {childList: true, subtree: true});
+	} else {
+		element.addEventListener("DOMNodeInserted", callback);
+		element.addEventListener("DOMNodeRemoved", callback);
+	}
 }
 
 function typeNumber(e) {

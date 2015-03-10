@@ -4,11 +4,14 @@
 
 Browser | Link | Version | Source Code
 ------- | ---- | ------- | -----------
-Chrome | [Web Store](//chrome.google.com/webstore/detail/youtube-repeater/ihlfngkojddkjkdlmgkbdpkfkafclhnj) | 1.58 | [github folder](//github.com/dcrousso/YouTube-Repeater/tree/master/Chrome)
-Firefox | [Add-Ons](//addons.mozilla.org/en-US/firefox/addon/youtube-repeater/) | 1.5.9 | [github folder](//github.com/dcrousso/YouTube-Repeater/tree/master/Firefox)
-Safari| [download](//devinrousso.com/projects/YouTube-Repeater/YouTube-Repeater.safariextz) | 1.5.8 | [github folder](//github.com/dcrousso/YouTube-Repeater/tree/master/Safari)
+Chrome | [Web Store](//chrome.google.com/webstore/detail/youtube-repeater/ihlfngkojddkjkdlmgkbdpkfkafclhnj) | 2.0.0 | [github folder](//github.com/dcrousso/YouTube-Repeater/tree/master/Chrome)
+Firefox | [Add-Ons](//addons.mozilla.org/en-US/firefox/addon/youtube-repeater/) | 2.0.0 | [github folder](//github.com/dcrousso/YouTube-Repeater/tree/master/Firefox)
+Safari| [download](//devinrousso.com/projects/YouTube-Repeater/YouTube-Repeater.safariextz) | 2.0.0 | [github folder](//github.com/dcrousso/YouTube-Repeater/tree/master/Safari)
 
 ### Changelog
+
+###### Version 2.0:
+ - Repeat start/end timer now automatically resets on new video
 
 ###### Version 1.5:
  - You can now send repeats to friends with this plugin installed by adding #r=true to the video's URL
