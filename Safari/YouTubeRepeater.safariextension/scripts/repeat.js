@@ -107,11 +107,11 @@ function generateRepeatControls() {
 
 	replayButton.addEventListener("mouseover", function() {
 		replayControlsShow();
-		if(replayControlsStartInput.value === "") {
+		if(replayControlsStartInput.value === "" || isNaN(replayControlsStartInput.value)) {
 			replayControlsStartInput.value = video.duration > 3600 ? "0:00:00" : "0:00";
 			replayControlsStartInput.style.width = (replayControlsStartInput.value.length * 6 + 4) + "px";
 		}
-		if(replayControlsEndInput.value === "") {
+		if(replayControlsEndInput.value === "" || isNaN(replayControlsEndInput.value)) {
 			replayControlsEndInput.value = secondsToString(video.duration);
 			replayControlsEndInput.style.width = (replayControlsEndInput.value.length * 6 + 4) + "px";
 		}
