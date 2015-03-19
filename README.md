@@ -12,6 +12,7 @@ Safari| [download](//devinrousso.com/projects/YouTube-Repeater/YouTube-Repeater.
 
 ###### Version 2.0:
  - Repeat start/end timer now automatically resets on new video
+ - If the value of the start/end input box is not a number, simply hovering over the repeat icon will reset its value to default
 
 ###### Version 1.5:
  - You can now send repeats to friends with this plugin installed by adding #r=true to the video's URL
