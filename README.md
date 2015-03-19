@@ -4,9 +4,9 @@
 
 Browser | Link | Version | Source Code
 ------- | ---- | ------- | -----------
-Chrome | [Web Store](//chrome.google.com/webstore/detail/youtube-repeater/ihlfngkojddkjkdlmgkbdpkfkafclhnj) | 2.0.0 | [github folder](//github.com/dcrousso/YouTube-Repeater/tree/master/Chrome)
-Firefox | [Add-Ons](//addons.mozilla.org/en-US/firefox/addon/youtube-repeater/) | 2.0.0 | [github folder](//github.com/dcrousso/YouTube-Repeater/tree/master/Firefox)
-Safari| [download](//devinrousso.com/projects/YouTube-Repeater/YouTube-Repeater.safariextz) | 2.0.0 | [github folder](//github.com/dcrousso/YouTube-Repeater/tree/master/Safari)
+Chrome | [Web Store](//chrome.google.com/webstore/detail/youtube-repeater/ihlfngkojddkjkdlmgkbdpkfkafclhnj) | 2.0.1 | [github folder](//github.com/dcrousso/YouTube-Repeater/tree/master/Chrome)
+Firefox | [Add-Ons](//addons.mozilla.org/en-US/firefox/addon/youtube-repeater/) | 2.0.1 | [github folder](//github.com/dcrousso/YouTube-Repeater/tree/master/Firefox)
+Safari| [download](//devinrousso.com/projects/YouTube-Repeater/YouTube-Repeater.safariextz) | 2.0.1 | [github folder](//github.com/dcrousso/YouTube-Repeater/tree/master/Safari)
 
 ### Changelog
 
