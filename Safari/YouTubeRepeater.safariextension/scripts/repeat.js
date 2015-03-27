@@ -40,7 +40,7 @@ function generateRepeatControls() {
 
 	var replayButtonTooltipBodyText = document.createElement("div");
 	replayButtonTooltipBodyText.className = "ytp-text-tooltip";
-	replayButtonTooltipBodyText.innerHTML = "Repeat";
+	replayButtonTooltipBodyText.textContent = "Repeat";
 	replayButtonTooltipBody.appendChild(replayButtonTooltipBodyText);
 
 	var replayButtonTooltipArrow = document.createElement("div");
@@ -56,23 +56,24 @@ function generateRepeatControls() {
 	replayButton.appendChild(replayControls);
 
 	var replayControlsStartLabel = document.createElement("span");
-	replayControlsStartLabel.innerHTML = "Start:";
+	replayControlsStartLabel.textContent = "Start:";
 	replayControlsStartLabel.style.marginRight = "3px";
 	replayControls.appendChild(replayControlsStartLabel);
 
 	replayControlsStartInput = document.createElement("input");
 	replayControlsStartInput.type = "text";
 	replayControlsStartInput.id = "replayStart";
+	replayControlsStartInput.style.width = "28px";
 	replayControlsStartInput.style.height = "13px";
 	replayControls.appendChild(replayControlsStartInput);
 
 	var replayControlsTimeSeparator = document.createElement("span");
-	replayControlsTimeSeparator.innerHTML = "‒";
+	replayControlsTimeSeparator.textContent = "‒";
 	replayControlsTimeSeparator.style.margin = "0 5px";
 	replayControls.appendChild(replayControlsTimeSeparator);
 
 	var replayControlsEndLabel = document.createElement("span");
-	replayControlsEndLabel.innerHTML = "End:";
+	replayControlsEndLabel.textContent = "End:";
 	replayControlsEndLabel.style.marginRight = "3px";
 	replayControls.appendChild(replayControlsEndLabel);
 
@@ -83,7 +84,7 @@ function generateRepeatControls() {
 	replayControls.appendChild(replayControlsEndInput);
 
 	var replayControlsNumberLabel = document.createElement("span");
-	replayControlsNumberLabel.innerHTML = "Loops: ";
+	replayControlsNumberLabel.textContent = "Loops: ";
 	replayControlsNumberLabel.style.margin = "0 3px 0 15px";
 	replayControls.appendChild(replayControlsNumberLabel);
 
@@ -105,13 +106,14 @@ function generateRepeatControls() {
 		currentVideo = window.location.search;
 	});
 
+	var inputRegExp = new RegExp(/^(\d+:)?(\d{1,2}:)(\d{1,2})$/);
 	replayButton.addEventListener("mouseover", function() {
 		replayControlsShow();
-		if(replayControlsStartInput.value === "" || isNaN(replayControlsStartInput.value)) {
+		if(replayControlsStartInput.value === "" || !inputRegExp.test(replayControlsStartInput.value)) {
 			replayControlsStartInput.value = video.duration > 3600 ? "0:00:00" : "0:00";
 			replayControlsStartInput.style.width = (replayControlsStartInput.value.length * 6 + 4) + "px";
 		}
-		if(replayControlsEndInput.value === "" || isNaN(replayControlsEndInput.value)) {
+		if(replayControlsEndInput.value === "" || !inputRegExp.test(replayControlsEndInput.value)) {
 			replayControlsEndInput.value = secondsToString(video.duration);
 			replayControlsEndInput.style.width = (replayControlsEndInput.value.length * 6 + 4) + "px";
 		}
@@ -136,9 +138,9 @@ function generateRepeatControls() {
 		}
 	});
 
-	replayControlsStartInput.addEventListener("keyup", typeNumber);
-	replayControlsEndInput.addEventListener("keyup", typeNumber);
-	replayControlsNumberInput.addEventListener("keyup", typeNumber);
+	replayControlsStartInput.addEventListener("keydown", typeNumber);
+	replayControlsEndInput.addEventListener("keydown", typeNumber);
+	replayControlsNumberInput.addEventListener("keydown", typeNumber);
 }
 
 function activateRepeat() {
@@ -273,15 +275,16 @@ function detectNewVideo(element, callback) {
 }
 
 function typeNumber(e) {
-	var e = (e) ? e : ((event) ? event : null); 
-	var node = (e.target) ? e.target : ((e.srcElement) ? e.srcElement : null); 
-	if(node.type==="text") {
-		if(e.keyCode >= 48 && e.keyCode <= 57) {
-			node.value += String.fromCharCode(e.keyCode);
-			e.preventDefault();
-			node.style.width = (node.value.length * 6 + 4) + "px";
-			return false;
-		} else if(e.keyCode === 13) {
+	var node = (e.target) ? e.target : e.srcElement;
+	if(e.keyCode === 8 || e.keyCode === 46 || e.keyCode === 37 || e.keyCode === 39) {
+		e.stopPropagation();
+		return true;
+	} else if((e.keyCode < 48 || e.keyCode > 57) && e.keyCode !== 13 && e.keyCode !== 186) {
+		e.preventDefault();
+		e.stopPropagation();
+		return false;
+	} else {
+		if(e.keyCode === 13) {
 			start = stringToSeconds(replayControlsStartInput.value);
 			end = stringToSeconds(replayControlsEndInput.value);
 			loops = parseInt(document.getElementById("replayLimit").value) || -1;
@@ -294,7 +297,17 @@ function typeNumber(e) {
 			} else {
 				addURLHash();
 			}
+		} else {
+			var selection = node.selectionStart;
+			var prefix = node.value.substring(0, selection);
+			var suffix = node.value.substring(selection);
+			node.value = prefix + (e.keyCode === 186 ? ":" : String.fromCharCode(e.keyCode)) + suffix;
+			node.style.width = (node.value.length * 6 + 4) + "px";
+			node.selectionStart = node.selectionEnd = selection + 1;
 		}
+		e.preventDefault();
+		e.stopPropagation();
+		return true;
 	}
 }
 
