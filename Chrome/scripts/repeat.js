@@ -121,7 +121,7 @@ function generateRepeatControls() {
 	replayButton.addEventListener("mouseleave", replayControlsHide);
 
 	replayButtonImage.addEventListener("mouseover", function() {
-		replayButtonTooltip.style.top = (video.parentElement.offsetHeight + 3) + "px";
+		replayButtonTooltip.style.top = (video.parentElement.parentElement.offsetHeight - videoControls.offsetHeight) + "px";
 		replayButtonTooltip.style.left = (replayButton.offsetLeft + replayButton.offsetWidth - 15) + "px";
 		replayButtonTooltip.style.display = "block";
 	});
