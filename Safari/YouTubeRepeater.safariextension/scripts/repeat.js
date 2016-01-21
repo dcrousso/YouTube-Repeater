@@ -1,7 +1,7 @@
 var video, videoControls, imageRepeat, imageRepeatActive, currentVideo;
 var videoAvailable = setInterval(function() {
 	video = document.getElementsByClassName("html5-main-video")[0];
-	videoControls = document.getElementsByClassName("html5-player-chrome")[0];
+	videoControls = document.getElementsByClassName("ytp-chrome-controls")[0];
 	if(document.location.search.indexOf("?v=") >= 0 && video != undefined && videoControls.children.length > 0) {
 		generateRepeatControls();
 		clearInterval(videoAvailable);
@@ -18,24 +18,31 @@ function generateRepeatControls() {
 	replayButton = document.createElement("div");
 	replayButton.id = "replayButton";
 	replayButton.setAttribute("role", "button");
+	replayButton.style.height = "100%";
 	replayButton.style.float = "right";
-	replayButton.style.height = "27px";
 	replayButton.style.cursor = "pointer";
 	videoControls.appendChild(replayButton);
 
 	replayButtonImage = document.createElement("img");
+	replayButtonImage.style.boxSizing = "border-box";
+	replayButtonImage.style.height = "100%";
 	replayButtonImage.style.float = "right";
+	replayButtonImage.style.padding = "4px 0";
 	replayButtonImage.src = imageRepeat;
 	replayButton.appendChild(replayButtonImage);
 
 	var replayButtonTooltip = document.createElement("div");
 	replayButtonTooltip.id = "replayButtonTooltip";
 	replayButtonTooltip.className = "ytp-tooltip";
+	replayButtonTooltip.style.display = "none";
 	document.getElementsByClassName("html5-video-player")[0].appendChild(replayButtonTooltip);
 
 	var replayButtonTooltipBody = document.createElement("div");
 	replayButtonTooltipBody.className = "ytp-tooltip-body";
 	replayButtonTooltipBody.style.left = "-22.5px";
+	replayButtonTooltipBody.style.padding = "5px 8px";
+	replayButtonTooltipBody.style.backgroundColor = "rgba(28,28,28,0.8)";
+	replayButtonTooltipBody.style.borderRadius = "2px";
 	replayButtonTooltip.appendChild(replayButtonTooltipBody);
 
 	var replayButtonTooltipBodyText = document.createElement("div");
@@ -43,22 +50,14 @@ function generateRepeatControls() {
 	replayButtonTooltipBodyText.textContent = "Repeat";
 	replayButtonTooltipBody.appendChild(replayButtonTooltipBodyText);
 
-	var replayButtonTooltipArrow = document.createElement("div");
-	replayButtonTooltipArrow.className = "ytp-tooltip-arrow";
-	replayButtonTooltip.appendChild(replayButtonTooltipArrow);
-
 	replayControls = document.createElement("div");
 	replayControls.id = "replayControls";
 	replayControls.style.display = "none";
+	replayControls.style.height = "100%";
 	replayControls.style.float = "right";
-	replayControls.style.lineHeight = "27px";
+	replayControls.style.alignItems = "center";
 	replayControls.style.opacity = "0";
 	replayButton.appendChild(replayControls);
-
-	var replayControlsStartLabel = document.createElement("span");
-	replayControlsStartLabel.textContent = "Start:";
-	replayControlsStartLabel.style.marginRight = "3px";
-	replayControls.appendChild(replayControlsStartLabel);
 
 	replayControlsStartInput = document.createElement("input");
 	replayControlsStartInput.type = "text";
@@ -68,14 +67,11 @@ function generateRepeatControls() {
 	replayControls.appendChild(replayControlsStartInput);
 
 	var replayControlsTimeSeparator = document.createElement("span");
-	replayControlsTimeSeparator.textContent = "‒";
+	replayControlsTimeSeparator.textContent = "\u2014";
 	replayControlsTimeSeparator.style.margin = "0 5px";
+	replayControlsTimeSeparator.style.paddingTop = "2px";
+	replayControlsTimeSeparator.style.fontSize = "12px";
 	replayControls.appendChild(replayControlsTimeSeparator);
-
-	var replayControlsEndLabel = document.createElement("span");
-	replayControlsEndLabel.textContent = "End:";
-	replayControlsEndLabel.style.marginRight = "3px";
-	replayControls.appendChild(replayControlsEndLabel);
 
 	replayControlsEndInput = document.createElement("input");
 	replayControlsEndInput.type = "text";
@@ -85,7 +81,9 @@ function generateRepeatControls() {
 
 	var replayControlsNumberLabel = document.createElement("span");
 	replayControlsNumberLabel.textContent = "Loops: ";
-	replayControlsNumberLabel.style.margin = "0 3px 0 15px";
+	replayControlsNumberLabel.style.margin = "0 3px 0 10px";
+	replayControlsNumberLabel.style.paddingTop = "2px";
+	replayControlsNumberLabel.style.fontSize = "12px";
 	replayControls.appendChild(replayControlsNumberLabel);
 
 	var replayControlsNumberInput = document.createElement("input");
@@ -121,14 +119,14 @@ function generateRepeatControls() {
 	replayButton.addEventListener("mouseleave", replayControlsHide);
 
 	replayButtonImage.addEventListener("mouseover", function() {
-		replayButtonTooltip.style.top = (video.parentElement.parentElement.offsetHeight - videoControls.offsetHeight) + "px";
-		replayButtonTooltip.style.left = (replayButton.offsetLeft + replayButton.offsetWidth - 15) + "px";
+		replayButtonTooltip.style.bottom = (videoControls.parentElement.offsetHeight + (replayButtonTooltip.offsetHeight / 2) + 10) + "px";
+		replayButtonTooltip.style.left = (replayButtonImage.offsetLeft + (replayButtonImage.offsetWidth / 2) - (replayButtonTooltip.offsetWidth / 2) - 12) + "px";
 		replayButtonTooltip.style.display = "block";
 	});
 	replayButtonImage.addEventListener("mouseleave", function() {
 		replayButtonTooltip.style.display = "none";
 	});
-	replayButtonImage.addEventListener("mouseup", function() {
+	replayButtonImage.addEventListener("click", function() {
 		if(replayButton.className === "active") {
 			deactivateRepeat();
 		} else {
@@ -145,7 +143,7 @@ function generateRepeatControls() {
 
 function activateRepeat() {
 	replayButtonImage.src = imageRepeatActive;
-	replayControls.style.display = "block";
+	replayControls.style.display = "flex";
 	replayButton.className = "active";
 	addURLHash();
 	repeater = setInterval(function() {
@@ -231,7 +229,7 @@ function addURLHash() {
 }
 
 function replayControlsShow() {
-	replayControls.style.display = "block";
+	replayControls.style.display = "flex";
 	clearInterval(replayControlsInterval);
 	replayControlsInterval = setInterval(function() {
 		replayControlsOpacity = parseFloat(replayControls.style.opacity);
